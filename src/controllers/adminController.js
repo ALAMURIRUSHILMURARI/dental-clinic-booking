@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const Appointment = require('../models/Appointment');
 const BlockedDate = require('../models/BlockedDate');
 const { sendConfirmationEmail, sendRejectionEmail } = require('../utils/emailService');
+const { sendApprovalSMS, sendRejectionSMS } = require('../utils/smsService');
+
 
 // Retrieve admin credentials from environment or use defaults
 const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin';
@@ -176,12 +178,15 @@ exports.approveAppointment = async (req, res) => {
     for (let pendingApp of conflictingPending) {
       pendingApp.status = 'Rejected';
       await pendingApp.save();
-      // Send rejection notification
+      // Send rejection notification (Email and SMS)
       await sendRejectionEmail(pendingApp);
+      await sendRejectionSMS(pendingApp);
     }
 
-    // 4. Send approval email to patient
+    // 4. Send approval notifications (Email and SMS)
     await sendConfirmationEmail(appointment);
+    await sendApprovalSMS(appointment);
+
 
     return res.json({
       success: true,
@@ -209,8 +214,10 @@ exports.rejectAppointment = async (req, res) => {
     appointment.status = 'Rejected';
     await appointment.save();
 
-    // Send rejection email to patient
+    // Send rejection notifications (Email and SMS)
     await sendRejectionEmail(appointment);
+    await sendRejectionSMS(appointment);
+
 
     return res.json({
       success: true,
@@ -247,8 +254,11 @@ exports.blockDate = async (req, res) => {
     for (let app of pendingOnBlockedDate) {
       app.status = 'Rejected';
       await app.save();
+      // Send rejection notifications (Email and SMS)
       await sendRejectionEmail(app);
+      await sendRejectionSMS(app);
     }
+
 
     return res.status(201).json({
       success: true,
