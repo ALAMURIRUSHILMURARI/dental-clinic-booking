@@ -3,6 +3,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
+const mongoose = require('mongoose');
+
 
 const connectDB = require('./src/config/db.js');
 const appointmentRoutes = require('./src/routes/appointmentRoutes.js');
@@ -45,6 +47,13 @@ app.get('/admin-dashboard', (req, res) => {
 
 // Basic check route
 app.get('/api/health', (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  if (!isDbConnected) {
+    return res.status(503).json({ 
+      success: false, 
+      message: 'Server is online but database is disconnected.' 
+    });
+  }
   res.json({ success: true, message: 'Masquerade Dental Hospital API is fully healthy!' });
 });
 
