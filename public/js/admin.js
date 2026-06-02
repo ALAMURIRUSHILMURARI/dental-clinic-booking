@@ -980,7 +980,7 @@ document.addEventListener('DOMContentLoaded', () => {
           loginForm.reset();
           checkAuthState();
         } else {
-          showToast('Invalid credentials. Use admin / dentaladmin123.', 'error');
+          showToast('Invalid credentials.', 'error');
         }
       }, 300);
     } else {
