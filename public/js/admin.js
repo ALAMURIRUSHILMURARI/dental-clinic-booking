@@ -82,6 +82,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000);
   };
 
+  // Custom Confirm Dialog Resolver
+  const showCustomConfirm = (title, message, type = 'success') => {
+    return new Promise((resolve) => {
+      const confirmModal = document.getElementById('confirm-modal');
+      const confirmHeader = document.getElementById('confirm-modal-header');
+      const confirmTitle = document.getElementById('confirm-modal-title');
+      const confirmIcon = document.getElementById('confirm-modal-icon');
+      const confirmMessage = document.getElementById('confirm-modal-message');
+      const confirmBtn = document.getElementById('confirm-modal-confirm-btn');
+      const cancelBtn = document.getElementById('confirm-modal-cancel-btn');
+      const closeBtn = document.getElementById('confirm-modal-close');
+
+      // Style based on type (success / danger / warning)
+      if (type === 'success') {
+        confirmHeader.style.background = 'linear-gradient(135deg, var(--clr-success) 0%, hsl(145, 80%, 30%) 100%)';
+        confirmIcon.style.color = 'var(--clr-success)';
+        confirmIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.style.background = 'linear-gradient(135deg, var(--clr-success) 0%, hsl(145, 80%, 32%) 100%)';
+        confirmBtn.style.borderColor = 'var(--clr-success)';
+        confirmBtn.textContent = 'Yes, Approve';
+      } else if (type === 'danger') {
+        confirmHeader.style.background = 'linear-gradient(135deg, var(--clr-danger) 0%, hsl(355, 75%, 38%) 100%)';
+        confirmIcon.style.color = 'var(--clr-danger)';
+        confirmIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.style.background = 'linear-gradient(135deg, var(--clr-danger) 0%, hsl(355, 75%, 38%) 100%)';
+        confirmBtn.style.borderColor = 'var(--clr-danger)';
+        confirmBtn.textContent = 'Yes, Reject';
+      } else {
+        confirmHeader.style.background = 'linear-gradient(135deg, var(--clr-warning) 0%, #d97706 100%)';
+        confirmIcon.style.color = 'var(--clr-warning)';
+        confirmIcon.innerHTML = '<i class="fas fa-question-circle"></i>';
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.style.background = 'linear-gradient(135deg, var(--clr-warning) 0%, #d97706 100%)';
+        confirmBtn.style.borderColor = 'var(--clr-warning)';
+        confirmBtn.textContent = 'Confirm';
+      }
+
+      confirmTitle.innerHTML = `<i class="${type === 'success' ? 'fas fa-check-circle' : type === 'danger' ? 'fas fa-exclamation-triangle' : 'fas fa-question-circle'}"></i> ${title}`;
+      confirmMessage.textContent = message;
+      confirmModal.style.display = 'flex';
+
+      const cleanUp = () => {
+        confirmModal.style.display = 'none';
+        confirmBtn.removeEventListener('click', onConfirm);
+        cancelBtn.removeEventListener('click', onCancel);
+        closeBtn.removeEventListener('click', onCancel);
+      };
+
+      const onConfirm = () => {
+        cleanUp();
+        resolve(true);
+      };
+
+      const onCancel = () => {
+        cleanUp();
+        resolve(false);
+      };
+
+      confirmBtn.addEventListener('click', onConfirm);
+      cancelBtn.addEventListener('click', onCancel);
+      closeBtn.addEventListener('click', onCancel);
+    });
+  };
+
   // Pre-seed localStorage Mock Data for Offline Demo fallback
   const initLocalStorage = () => {
     if (!localStorage.getItem('masquerade_appointments')) {
@@ -433,7 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Action Click Handler: Approve Appointment
   const handleApproveAppointment = async (id) => {
-    if (confirm('Are you sure you want to APPROVE this appointment? This permanently books the time slot.')) {
+    const confirmed = await showCustomConfirm('Approve Appointment', 'Are you sure you want to APPROVE this appointment? This permanently books the time slot.', 'success');
+    if (confirmed) {
       const app = await getAppointmentById(id);
       if (!app) {
         showToast('Appointment details not found.', 'error');
@@ -493,7 +560,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Action Click Handler: Reject Appointment
   const handleRejectAppointment = async (id) => {
-    if (confirm('Are you sure you want to REJECT this appointment request?')) {
+    const confirmed = await showCustomConfirm('Reject Request', 'Are you sure you want to REJECT this appointment request?', 'danger');
+    if (confirmed) {
       if (isOfflineMode) {
         const apps = getLocalAppointments();
         const app = apps.find(a => a.id === id);
@@ -899,7 +967,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Action Click Handler: Unblock Date
   const handleUnblockDate = async (date) => {
-    if (confirm(`Are you sure you want to unblock ${date}? Slots will become available again.`)) {
+    const confirmed = await showCustomConfirm('Unblock Date', `Are you sure you want to unblock ${date}? Slots will become available again.`, 'warning');
+    if (confirmed) {
       if (isOfflineMode) {
         let blocked = getLocalBlockedDates();
         blocked = blocked.filter(b => b.date !== date);
