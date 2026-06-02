@@ -47,8 +47,9 @@ app.get('/admin-dashboard', (req, res) => {
 
 // Basic check route
 app.get('/api/health', (req, res) => {
-  const isDbConnected = mongoose.connection.readyState === 1;
-  if (!isDbConnected) {
+  const state = mongoose.connection.readyState;
+  const isDbHealthy = state === 1 || state === 2;
+  if (!isDbHealthy) {
     return res.status(503).json({ 
       success: false, 
       message: 'Server is online but database is disconnected.' 
