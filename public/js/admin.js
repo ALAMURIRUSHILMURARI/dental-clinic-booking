@@ -400,32 +400,74 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === detailModal) closeDetailModal();
   });
 
+  // Helper to open WhatsApp Web with a pre-filled confirmation message
+  const openWhatsAppRedirect = (app) => {
+    if (!app) {
+      console.error('No appointment data available for WhatsApp redirect.');
+      return;
+    }
+
+    const patientName = app.patientName;
+    const phone = app.phone;
+
+    if (!phone) {
+      alert('Error: Phone number is missing. Cannot open WhatsApp.');
+      return;
+    }
+
+    // Sanitize phone number (remove non-numeric characters)
+    let sanitizedPhone = phone.replace(/[^0-9]/g, '');
+
+    // Auto-prepend country code for India (91) if it's a standard 10-digit number
+    if (sanitizedPhone.length === 10) {
+      sanitizedPhone = '91' + sanitizedPhone;
+    }
+
+    const message = `Hello ${patientName}! Your dentist appointment has been approved for the slot you booked. We look forward to seeing you at your scheduled appointment. Thank you.`;
+    const encodedMessage = encodeURIComponent(message);
+
+    const waURL = `https://wa.me/${sanitizedPhone}?text=${encodedMessage}`;
+    
+    // Open in a new tab
+    window.open(waURL, '_blank');
+  };
+
   // Action Click Handler: Approve Appointment
   const handleApproveAppointment = async (id) => {
     if (confirm('Are you sure you want to APPROVE this appointment? This permanently books the time slot.')) {
+      const app = await getAppointmentById(id);
+      if (!app) {
+        showToast('Appointment details not found.', 'error');
+        return;
+      }
+
       if (isOfflineMode) {
         const apps = getLocalAppointments();
-        const app = apps.find(a => a.id === id);
-        if (!app) return;
+        const localApp = apps.find(a => String(a.id || a._id) === String(id));
+        if (!localApp) return;
 
         // Check if double booking
-        const doubleBooked = apps.some(a => a.date === app.date && a.timeSlot === app.timeSlot && a.status === 'Approved' && a.id !== id);
+        const doubleBooked = apps.some(a => a.date === localApp.date && a.timeSlot === localApp.timeSlot && a.status === 'Approved' && String(a.id || a._id) !== String(id));
         if (doubleBooked) {
           showToast('Cannot approve: Slot already approved for another patient.', 'error');
           return;
         }
 
-        app.status = 'Approved';
+        localApp.status = 'Approved';
         
         // Auto reject conflicting pending appointments
         apps.forEach(a => {
-          if (a.date === app.date && a.timeSlot === app.timeSlot && a.status === 'Pending' && a.id !== id) {
+          if (a.date === localApp.date && a.timeSlot === localApp.timeSlot && a.status === 'Pending' && String(a.id || a._id) !== String(id)) {
             a.status = 'Rejected';
           }
         });
 
         localStorage.setItem('masquerade_appointments', JSON.stringify(apps));
         showToast('Appointment approved successfully. Notification logged to console.', 'success');
+        
+        // Trigger WhatsApp Redirect
+        openWhatsAppRedirect(localApp);
+        
         closeDetailModal();
         loadDashboardData();
       } else {
@@ -440,6 +482,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const data = await response.json();
           if (data.success) {
             showToast('Appointment approved. Confirmation email triggered.', 'success');
+            
+            // Trigger WhatsApp Redirect
+            openWhatsAppRedirect(data.data || app);
+            
             closeDetailModal();
             loadDashboardData();
           } else {
