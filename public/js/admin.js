@@ -342,11 +342,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Retrieve Appointment details by ID
   const getAppointmentById = async (id) => {
+    console.log('Lookup appointment details for ID:', id);
     if (isOfflineMode) {
-      return getLocalAppointments().find(a => a.id === id);
+      const app = getLocalAppointments().find(a => String(a.id || a._id) === String(id));
+      console.log('Offline lookup result:', app);
+      return app;
     } else {
-      // Find directly in our loaded state instantly to avoid MongoDB ID search regex errors
-      return loadedAppointments.find(a => (a._id || a.id) === id);
+      // Find directly in our loaded state instantly, casting to String to prevent ObjectId vs string type mismatches
+      const app = loadedAppointments.find(a => String(a._id || a.id) === String(id));
+      console.log('Online lookup cache result:', app);
+      return app;
     }
   };
 
