@@ -584,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
           const data = await response.json();
           if (data.success) {
-            showToast('Appointment approved. Confirmation email triggered.', 'success');
+            showToast('Appointment approved successfully.', 'success');
             
             closeDetailModal();
             loadDashboardData();
