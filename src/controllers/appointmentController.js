@@ -151,10 +151,12 @@ exports.createAppointment = async (req, res) => {
 
     await newAppointment.save();
 
-    // Trigger email notification to the administrator asynchronously (resilient to SMTP server delays)
-    sendAdminNotificationEmail(newAppointment).catch(err => {
+    // In serverless environments, we must await the SMTP delivery to prevent Vercel from freezing the container before the email finishes sending
+    try {
+      await sendAdminNotificationEmail(newAppointment);
+    } catch (err) {
       console.error(`Resilient catch: Failed to notify admin via email: ${err.message}`);
-    });
+    }
 
     return res.status(201).json({
       success: true,
