@@ -78,7 +78,7 @@ const sendConfirmationEmail = async (appointment) => {
             </p>
 
             <div style="text-align: center;">
-              <a href="https://masqueradedental.com" style="background: #3182ce; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; display: inline-block; box-shadow: 0 3px 6px rgba(49, 130, 206, 0.3);">Visit Hospital Website</a>
+              <a href="${process.env.APP_URL || 'https://dental-clinic-booking-red.vercel.app'}" style="background: #3182ce; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; display: inline-block; box-shadow: 0 3px 6px rgba(49, 130, 206, 0.3);">Visit Hospital Website</a>
             </div>
           </div>
           
@@ -139,7 +139,7 @@ const sendRejectionEmail = async (appointment) => {
             <table style="width: 100%; margin-top: 25px;">
               <tr>
                 <td style="text-align: center;">
-                  <a href="${process.env.APP_URL || 'https://masqueradedental.com'}#booking" style="background: #d97706; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; display: inline-block; margin-right: 10px; box-shadow: 0 3px 6px rgba(217, 119, 6, 0.25);">Select New Time Slot</a>
+                  <a href="${process.env.APP_URL || 'https://dental-clinic-booking-red.vercel.app'}#booking" style="background: #d97706; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; display: inline-block; margin-right: 10px; box-shadow: 0 3px 6px rgba(217, 119, 6, 0.25);">Select New Time Slot</a>
                   <a href="tel:09542276777" style="background: #edf2f7; color: #2b3a4a; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; display: inline-block; border: 1px solid #cbd5e0;">Call: 095422 76777</a>
                 </td>
               </tr>
@@ -230,7 +230,7 @@ const sendAdminNotificationEmail = async (appointment) => {
             </div>
 
             <div style="text-align: center; margin-top: 30px;">
-              <a href="${process.env.APP_URL || 'https://masqueradedental.com'}/admin.html" style="background: #102a43; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; display: inline-block; box-shadow: 0 3px 6px rgba(16, 42, 67, 0.3);">Open Admin Dashboard</a>
+              <a href="${process.env.APP_URL || 'https://dental-clinic-booking-red.vercel.app'}/admin.html" style="background: #102a43; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; display: inline-block; box-shadow: 0 3px 6px rgba(16, 42, 67, 0.3);">Open Admin Dashboard</a>
             </div>
           </div>
           
