@@ -53,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeTab = 'appointments';
   let calendarDate = new Date(); // Tracks display month
   let selectedCalendarDateStr = new Date().toISOString().split('T')[0];
+  let loadedAppointments = [];
+
 
   const API_BASE = '/api/admin';
 
@@ -269,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
         
         if (data.success) {
+          loadedAppointments = data.appointments;
           renderAppointmentsTable(data.appointments);
         } else {
           appTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--clr-danger);">${data.message}</td></tr>`;
@@ -342,19 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isOfflineMode) {
       return getLocalAppointments().find(a => a.id === id);
     } else {
-      try {
-        const response = await fetch(`${API_BASE}/appointments?search=${id}`, {
-          headers: { 'Authorization': `Bearer ${adminToken}` }
-        });
-        const data = await response.json();
-        if (data.success) {
-          return data.appointments.find(a => a._id === id);
-        }
-      } catch (error) {
-        showToast('Error retrieving appointment details.', 'error');
-      }
+      // Find directly in our loaded state instantly to avoid MongoDB ID search regex errors
+      return loadedAppointments.find(a => (a._id || a.id) === id);
     }
-    return null;
   };
 
   // Open Appointment details Modal
@@ -543,7 +536,10 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Authorization': `Bearer ${adminToken}` }
         });
         const appData = await appResponse.json();
-        if (appData.success) appointments = appData.appointments;
+        if (appData.success) {
+          loadedAppointments = appData.appointments;
+          appointments = appData.appointments;
+        }
       } catch (error) {
         console.error('Error fetching data for calendar grid.');
       }
@@ -630,7 +626,15 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Authorization': `Bearer ${adminToken}` }
         });
         const data = await response.json();
-        if (data.success) dayApps = data.appointments;
+        if (data.success) {
+          dayApps = data.appointments;
+          // Sync dynamically fetched day appointments to our global cache
+          dayApps.forEach(app => {
+            if (!loadedAppointments.some(a => (a._id || a.id) === (app._id || app.id))) {
+              loadedAppointments.push(app);
+            }
+          });
+        }
 
         const blResponse = await fetch(`${API_BASE}/blocked-dates`, {
           headers: { 'Authorization': `Bearer ${adminToken}` }
