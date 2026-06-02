@@ -85,7 +85,7 @@ const sendConfirmationEmail = async (appointment) => {
           <!-- Footer -->
           <div style="background-color: #edf2f7; text-align: center; padding: 20px; font-size: 12px; color: #718096; border-top: 1px solid #e2e8f0;">
             <p style="margin: 0 0 5px 0;"><strong>Masquerade® Dental Hospital</strong></p>
-            <p style="margin: 0;">Guntur, Andhra Pradesh, India | Phone: 095422 76777 | contact@masqueradedental.com</p>
+            <p style="margin: 0;">Vijayawada, Andhra Pradesh, India | Phone: 095422 76777 | contact@masqueradedental.com</p>
             <p style="margin: 10px 0 0 0; font-size: 10px; opacity: 0.8;">© 2026 Masquerade Dental. All Rights Reserved.</p>
           </div>
         </div>
@@ -149,7 +149,7 @@ const sendRejectionEmail = async (appointment) => {
           <!-- Footer -->
           <div style="background-color: #edf2f7; text-align: center; padding: 20px; font-size: 12px; color: #718096; border-top: 1px solid #e2e8f0;">
             <p style="margin: 0 0 5px 0;"><strong>Masquerade® Dental Hospital</strong></p>
-            <p style="margin: 0;">Guntur, Andhra Pradesh, India | Phone: 095422 76777 | contact@masqueradedental.com</p>
+            <p style="margin: 0;">Vijayawada, Andhra Pradesh, India | Phone: 095422 76777 | contact@masqueradedental.com</p>
             <p style="margin: 10px 0 0 0; font-size: 10px; opacity: 0.8;">© 2026 Masquerade Dental. All Rights Reserved.</p>
           </div>
         </div>

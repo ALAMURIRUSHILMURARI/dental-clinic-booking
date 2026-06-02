@@ -1,6 +1,6 @@
 # Masquerade® Dental Hospital — Appointment Booking System
 
-Welcome to the production-ready appointment booking system for **Masquerade® Dental Hospital** (formerly Confydentz), Guntur's premier NABH accredited centre. 
+Welcome to the production-ready appointment booking system for **Masquerade® Dental Hospital** (formerly Confydentz), Vijayawada's premier NABH accredited centre. 
 
 This is a modern, responsive web application built with **HTML, CSS, JavaScript** on the frontend and **Node.js, Express, MongoDB (Mongoose)** on the backend. 
 
