@@ -338,18 +338,19 @@
 
   <!-- CUSTOM CONFIRMATION DIALOG MODAL -->
   <div id="confirm-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-card" style="max-width: 450px;">
+    <div class="modal-card" style="max-width: 500px;">
       <div class="modal-header" id="confirm-modal-header" style="padding: 18px 25px;">
         <h3 id="confirm-modal-title" style="color: var(--clr-white); font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px;"><i class="fas fa-question-circle"></i> Confirm Action</h3>
         <button class="modal-close" id="confirm-modal-close" style="font-size: 1.3rem;">&times;</button>
       </div>
-      <div class="modal-body" style="padding: 30px 25px; text-align: center;">
-        <div id="confirm-modal-icon" style="font-size: 3.2rem; margin-bottom: 18px; display: flex; justify-content: center; align-items: center;">
+      <div class="modal-body" style="padding: 25px 25px; text-align: center;">
+        <div id="confirm-modal-icon" style="font-size: 3rem; margin-bottom: 12px; display: flex; justify-content: center; align-items: center;">
           <i class="fas fa-check-circle"></i>
         </div>
-        <p id="confirm-modal-message" style="font-size: 1.05rem; color: var(--clr-neutral-800); font-weight: 600; line-height: 1.5; margin-bottom: 25px; font-family: var(--font-primary);">
+        <p id="confirm-modal-message" style="font-size: 1.05rem; color: var(--clr-neutral-800); font-weight: 600; line-height: 1.4; margin-bottom: 15px; font-family: var(--font-primary);">
           Are you sure you want to approve this appointment?
         </p>
+        <div id="confirm-modal-details" style="margin-top: 15px; text-align: left;"></div>
       </div>
       <div class="modal-footer" style="background-color: var(--clr-neutral-100); border-top: 1px solid var(--clr-neutral-200); padding: 15px 25px;">
         <button id="confirm-modal-cancel-btn" class="btn btn-outline" style="padding: 10px 22px; font-size: 0.85rem; border-color: var(--clr-neutral-300); color: var(--clr-neutral-800); font-weight: 600; background: var(--clr-white);">Cancel</button>

@@ -83,13 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Custom Confirm Dialog Resolver
-  const showCustomConfirm = (title, message, type = 'success') => {
+  const showCustomConfirm = (title, message, type = 'success', app = null) => {
     return new Promise((resolve) => {
       const confirmModal = document.getElementById('confirm-modal');
       const confirmHeader = document.getElementById('confirm-modal-header');
       const confirmTitle = document.getElementById('confirm-modal-title');
       const confirmIcon = document.getElementById('confirm-modal-icon');
       const confirmMessage = document.getElementById('confirm-modal-message');
+      const confirmDetails = document.getElementById('confirm-modal-details');
       const confirmBtn = document.getElementById('confirm-modal-confirm-btn');
       const cancelBtn = document.getElementById('confirm-modal-cancel-btn');
       const closeBtn = document.getElementById('confirm-modal-close');
@@ -123,6 +124,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
       confirmTitle.innerHTML = `<i class="${type === 'success' ? 'fas fa-check-circle' : type === 'danger' ? 'fas fa-exclamation-triangle' : 'fas fa-question-circle'}"></i> ${title}`;
       confirmMessage.textContent = message;
+
+      // Populate details grid if user/app info is present
+      if (app) {
+        confirmDetails.innerHTML = `
+          <div class="confirm-details-box" style="background-color: var(--clr-neutral-100); border: 1px solid var(--clr-neutral-200); border-radius: var(--border-radius-sm); padding: 15px; text-align: left;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.88rem; line-height: 1.4;">
+              <div>
+                <span style="font-weight: 700; color: var(--clr-neutral-600); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px;">Patient Name</span>
+                <span style="color: var(--clr-primary-900); font-weight: 700; font-size: 0.95rem;">${app.patientName}</span>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: var(--clr-neutral-600); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px;">Reference ID</span>
+                <span style="font-family: monospace; color: var(--clr-primary-900); font-weight: 700; font-size: 0.95rem;">${app.referenceNumber}</span>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: var(--clr-neutral-600); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px;">Date</span>
+                <span style="color: var(--clr-primary-900); font-weight: 600;">${app.date}</span>
+              </div>
+              <div>
+                <span style="font-weight: 700; color: var(--clr-neutral-600); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px;">Time Slot</span>
+                <span style="color: var(--clr-primary-900); font-weight: 600;">${app.timeSlot}</span>
+              </div>
+              <div style="grid-column: span 2;">
+                <span style="font-weight: 700; color: var(--clr-neutral-600); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px;">Treatment Required</span>
+                <span style="color: var(--clr-primary-900); font-weight: 600;">${app.treatment}</span>
+              </div>
+              <div style="grid-column: span 2; border-top: 1px solid var(--clr-neutral-200); padding-top: 8px; margin-top: 2px;">
+                <span style="font-weight: 700; color: var(--clr-neutral-600); display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px;">Contact Info</span>
+                <span style="color: var(--clr-primary-900); font-weight: 600;">📞 ${app.phone} | ✉️ ${app.email}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        confirmDetails.style.display = 'block';
+      } else {
+        confirmDetails.innerHTML = '';
+        confirmDetails.style.display = 'none';
+      }
+
       confirmModal.style.display = 'flex';
 
       const cleanUp = () => {
@@ -499,13 +539,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Action Click Handler: Approve Appointment
   const handleApproveAppointment = async (id) => {
-    const confirmed = await showCustomConfirm('Approve Appointment', 'Are you sure you want to APPROVE this appointment? This permanently books the time slot.', 'success');
+    const app = await getAppointmentById(id);
+    if (!app) {
+      showToast('Appointment details not found.', 'error');
+      return;
+    }
+    const confirmed = await showCustomConfirm('Approve Appointment', 'Are you sure you want to APPROVE this appointment? This permanently books the time slot.', 'success', app);
     if (confirmed) {
-      const app = await getAppointmentById(id);
-      if (!app) {
-        showToast('Appointment details not found.', 'error');
-        return;
-      }
 
       if (isOfflineMode) {
         const apps = getLocalAppointments();
@@ -560,7 +600,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Action Click Handler: Reject Appointment
   const handleRejectAppointment = async (id) => {
-    const confirmed = await showCustomConfirm('Reject Request', 'Are you sure you want to REJECT this appointment request?', 'danger');
+    const app = await getAppointmentById(id);
+    if (!app) {
+      showToast('Appointment details not found.', 'error');
+      return;
+    }
+    const confirmed = await showCustomConfirm('Reject Request', 'Are you sure you want to REJECT this appointment request?', 'danger', app);
     if (confirmed) {
       if (isOfflineMode) {
         const apps = getLocalAppointments();
