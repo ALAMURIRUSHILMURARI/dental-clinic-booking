@@ -1,6 +1,7 @@
 const Appointment = require('../models/Appointment');
 const BlockedDate = require('../models/BlockedDate');
 const generateReferenceNumber = require('../utils/referenceGenerator');
+const { sendAdminNotificationEmail } = require('../utils/emailService');
 
 // Define standard operating time slots based on hospital hours
 // Mon-Sat: 10am to 8:00pm, Sun: 10am to 4pm
@@ -149,6 +150,11 @@ exports.createAppointment = async (req, res) => {
     });
 
     await newAppointment.save();
+
+    // Trigger email notification to the administrator asynchronously (resilient to SMTP server delays)
+    sendAdminNotificationEmail(newAppointment).catch(err => {
+      console.error(`Resilient catch: Failed to notify admin via email: ${err.message}`);
+    });
 
     return res.status(201).json({
       success: true,

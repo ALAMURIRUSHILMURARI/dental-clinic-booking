@@ -168,7 +168,95 @@ const sendRejectionEmail = async (appointment) => {
   }
 };
 
+/**
+ * Sends a notification email to the administrator when a new request is submitted
+ */
+const sendAdminNotificationEmail = async (appointment) => {
+  try {
+    const transporter = await getTransporter();
+    const from = process.env.SMTP_FROM || '"Masquerade Dental Hospital" <appointments@masqueradedental.com>';
+    const to = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'contact@masqueradedental.com';
+
+    const htmlContent = `
+      <div style="font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif; background-color: #f4f6f9; padding: 30px 15px; color: #2b3a4a;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden;">
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #102a43 0%, #243e56 100%); padding: 35px 20px; text-align: center; color: #ffffff;">
+            <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 0.5px;">New Appointment Request</h1>
+            <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 15px;">Masquerade® Dental Hospital — Scheduling Notice</p>
+          </div>
+          
+          <!-- Content -->
+          <div style="padding: 30px; line-height: 1.6;">
+            <h2 style="color: #102a43; margin-top: 0; font-size: 18px;">Hello Administrator,</h2>
+            <p style="font-size: 15px; color: #4a5568;">A patient has submitted a new appointment booking request on the patient portal. Please review the details below to action the request:</p>
+            
+            <!-- Details Card -->
+            <div style="background-color: #f7fafc; border-left: 4px solid #4a5568; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568; width: 40%;">Reference ID:</td>
+                  <td style="padding: 6px 0; color: #2d3748; font-weight: 700; font-family: monospace; font-size: 16px;">${appointment.referenceNumber}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568;">Patient Name:</td>
+                  <td style="padding: 6px 0; color: #2d3748; font-weight: 600;">${appointment.patientName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568;">Phone Number:</td>
+                  <td style="padding: 6px 0; color: #2d3748;">${appointment.phone}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568;">Email Address:</td>
+                  <td style="padding: 6px 0; color: #2d3748;">${appointment.email}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568;">Requested Date:</td>
+                  <td style="padding: 6px 0; color: #2d3748; font-weight: 600;">${appointment.date}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568;">Time Slot:</td>
+                  <td style="padding: 6px 0; color: #2d3748; font-weight: 600;">${appointment.timeSlot}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568;">Treatment Type:</td>
+                  <td style="padding: 6px 0; color: #2d3748;">${appointment.treatment}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-weight: bold; color: #4a5568; vertical-align: top;">Symptom Notes:</td>
+                  <td style="padding: 6px 0; color: #4a5568; font-style: italic;">${appointment.notes || 'No symptoms or special notes provided.'}</td>
+                </tr>
+              </table>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+              <a href="${process.env.APP_URL || 'https://masqueradedental.com'}/admin.html" style="background: #102a43; color: #ffffff; text-decoration: none; padding: 12px 30px; border-radius: 6px; font-weight: 600; display: inline-block; box-shadow: 0 3px 6px rgba(16, 42, 67, 0.3);">Open Admin Dashboard</a>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div style="background-color: #edf2f7; text-align: center; padding: 20px; font-size: 12px; color: #718096; border-top: 1px solid #e2e8f0;">
+            <p style="margin: 0 0 5px 0;"><strong>Masquerade® Dental Hospital Notification System</strong></p>
+            <p style="margin: 0;">Vijayawada, Andhra Pradesh, India | Phone: 095422 76777</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from,
+      to,
+      subject: `[NEW REQUEST] Reference ${appointment.referenceNumber} - ${appointment.patientName} (${appointment.date})`,
+      html: htmlContent
+    });
+    console.log(`Administrator notification email sent successfully to ${to}`);
+  } catch (error) {
+    console.error(`Error sending admin notification email: ${error.message}`);
+  }
+};
+
 module.exports = {
   sendConfirmationEmail,
-  sendRejectionEmail
+  sendRejectionEmail,
+  sendAdminNotificationEmail
 };
