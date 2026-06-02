@@ -116,30 +116,30 @@ const sendRejectionEmail = async (appointment) => {
       <div style="font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif; background-color: #f4f6f9; padding: 30px 15px; color: #2b3a4a;">
         <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden;">
           <!-- Header -->
-          <div style="background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); padding: 35px 20px; text-align: center; color: #ffffff;">
-            <h1 style="margin: 0; font-size: 26px; font-weight: 700; letter-spacing: 0.5px;">Appointment Reschedule Required</h1>
-            <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 15px;">Masquerade® Dental Hospital — NABH Accredited</p>
+          <div style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); padding: 35px 20px; text-align: center; color: #ffffff;">
+            <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 0.5px;">Reschedule Requested</h1>
+            <p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 15px;">Masquerade® Dental Hospital — Care & Safety First</p>
           </div>
           
           <!-- Content -->
           <div style="padding: 30px; line-height: 1.6;">
-            <h2 style="color: #c53030; margin-top: 0; font-size: 20px;">Hello, ${appointment.patientName}!</h2>
-            <p style="font-size: 15px; color: #4a5568;">Thank you for requesting an appointment with <strong>Masquerade® Dental Hospital</strong>.</p>
-            <p style="font-size: 15px; color: #4a5568;">We regret to inform you that we are unable to accommodate your booking for the requested slot: <strong>${appointment.date} at ${appointment.timeSlot}</strong>. This may be due to emergency surgeries, clinic schedules, or pre-existing bookings.</p>
+            <h2 style="color: #b45309; margin-top: 0; font-size: 20px;">Hello, ${appointment.patientName}!</h2>
+            <p style="font-size: 15px; color: #4a5568;">Thank you for choosing <strong>Masquerade® Dental Hospital</strong> for your dental care.</p>
+            <p style="font-size: 15px; color: #4a5568;">We are writing to **sincerely apologize for any inconvenience caused**, but we are unfortunately unable to accommodate your requested time slot: <strong>${appointment.date} at ${appointment.timeSlot}</strong>. This is due to sudden clinical schedule shifts or emergency maxillofacial surgeries requiring our specialists' immediate presence.</p>
             
-            <div style="background-color: #fffaf0; border-left: 4px solid #dd6b20; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; font-size: 14px; color: #7b341e;">
-              <strong>Reference ID:</strong> ${appointment.referenceNumber}<br>
-              <strong>Status:</strong> Not Available / Rejected
+            <div style="background-color: #fffaf0; border-left: 4px solid #d97706; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; font-size: 14px; color: #7b341e;">
+              <strong>Booking Reference ID:</strong> ${appointment.referenceNumber}<br>
+              <strong>Status:</strong> Reschedule Required
             </div>
 
             <p style="font-size: 15px; color: #4a5568; margin-bottom: 25px;">
-              We value your oral health and would love to accommodate you at another time! Please visit our booking portal to select another date or time slot, or contact our support team.
+              Your oral health remains our utmost priority, and we would be very grateful for the opportunity to care for your smile. We kindly invite you to select any other available date or time slot that works best for you.
             </p>
 
             <table style="width: 100%; margin-top: 25px;">
               <tr>
                 <td style="text-align: center;">
-                  <a href="https://masqueradedental.com/booking.html" style="background: #3182ce; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; display: inline-block; margin-right: 10px;">Select New Slot</a>
+                  <a href="${process.env.APP_URL || 'https://masqueradedental.com'}#booking" style="background: #d97706; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; display: inline-block; margin-right: 10px; box-shadow: 0 3px 6px rgba(217, 119, 6, 0.25);">Select New Time Slot</a>
                   <a href="tel:09542276777" style="background: #edf2f7; color: #2b3a4a; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: 600; display: inline-block; border: 1px solid #cbd5e0;">Call: 095422 76777</a>
                 </td>
               </tr>
