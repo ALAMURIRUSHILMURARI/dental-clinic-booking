@@ -363,10 +363,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modal-ref').textContent = app.referenceNumber;
     document.getElementById('modal-name').textContent = app.patientName;
     document.getElementById('modal-phone').textContent = app.phone;
+    
+    // Set WhatsApp Button URL dynamically
+    const waBtn = document.getElementById('modal-whatsapp-btn');
+    if (waBtn) {
+      if (app.phone) {
+        waBtn.href = getWhatsAppURL(app.phone, app.patientName);
+        waBtn.style.display = 'inline-flex';
+      } else {
+        waBtn.style.display = 'none';
+      }
+    }
+    
     document.getElementById('modal-email').textContent = app.email;
     document.getElementById('modal-date').textContent = app.date;
     document.getElementById('modal-slot').textContent = app.timeSlot;
     document.getElementById('modal-treatment').textContent = app.treatment;
+
     
     const badge = document.getElementById('modal-status-badge');
     badge.className = `status-badge ${app.status.toLowerCase()}`;
@@ -400,20 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === detailModal) closeDetailModal();
   });
 
-  // Helper to open WhatsApp Web with a pre-filled confirmation message
-  const openWhatsAppRedirect = (app) => {
-    if (!app) {
-      console.error('No appointment data available for WhatsApp redirect.');
-      return;
-    }
-
-    const patientName = app.patientName;
-    const phone = app.phone;
-
-    if (!phone) {
-      alert('Error: Phone number is missing. Cannot open WhatsApp.');
-      return;
-    }
+  // Helper to generate a sanitized WhatsApp Web URL
+  const getWhatsAppURL = (phone, patientName) => {
+    if (!phone) return '#';
 
     // Sanitize phone number (remove non-numeric characters)
     let sanitizedPhone = phone.replace(/[^0-9]/g, '');
@@ -426,10 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = `Hello ${patientName}! Your dentist appointment has been approved for the slot you booked. We look forward to seeing you at your scheduled appointment. Thank you.`;
     const encodedMessage = encodeURIComponent(message);
 
-    const waURL = `https://wa.me/${sanitizedPhone}?text=${encodedMessage}`;
-    
-    // Open in a new tab
-    window.open(waURL, '_blank');
+    return `https://wa.me/${sanitizedPhone}?text=${encodedMessage}`;
   };
 
   // Action Click Handler: Approve Appointment
@@ -465,9 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('masquerade_appointments', JSON.stringify(apps));
         showToast('Appointment approved successfully. Notification logged to console.', 'success');
         
-        // Trigger WhatsApp Redirect
-        openWhatsAppRedirect(localApp);
-        
         closeDetailModal();
         loadDashboardData();
       } else {
@@ -482,9 +478,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const data = await response.json();
           if (data.success) {
             showToast('Appointment approved. Confirmation email triggered.', 'success');
-            
-            // Trigger WhatsApp Redirect
-            openWhatsAppRedirect(data.data || app);
             
             closeDetailModal();
             loadDashboardData();
@@ -743,7 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="pane-app-body">
             <h5>${app.patientName}</h5>
             <p><strong>Treatment:</strong> ${app.treatment}</p>
-            <p><strong>Contact:</strong> ${app.phone} | ${app.email}</p>
+            <p><strong>Contact:</strong> ${app.phone} <a href="${getWhatsAppURL(app.phone, app.patientName)}" target="_blank" style="color: #25d366; font-weight: bold; margin-left: 6px; display: inline-flex; align-items: center; gap: 3px;"><i class="fab fa-whatsapp"></i> Chat</a> | ${app.email}</p>
             <p><strong>Ref:</strong> ${app.referenceNumber}</p>
             ${app.notes ? `<div class="pane-app-notes"><strong>Notes:</strong> ${app.notes}</div>` : ''}
           </div>
