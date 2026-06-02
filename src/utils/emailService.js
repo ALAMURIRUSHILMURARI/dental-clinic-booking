@@ -175,7 +175,7 @@ const sendAdminNotificationEmail = async (appointment) => {
   try {
     const transporter = await getTransporter();
     const from = process.env.SMTP_FROM || '"Masquerade Dental Hospital" <appointments@masqueradedental.com>';
-    const to = process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'contact@masqueradedental.com';
+    const to = process.env.ADMIN_EMAIL || 'mail4murari27@gmail.com';
 
     const htmlContent = `
       <div style="font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif; background-color: #f4f6f9; padding: 30px 15px; color: #2b3a4a;">
